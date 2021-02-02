@@ -1,4 +1,5 @@
 <?php
+use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
 use XoopsModules\Tadtools\Ztree;
 /*-----------引入檔案區--------------*/
@@ -14,6 +15,8 @@ function list_tadnews_cate_tree($def_ncsn = '')
 {
     global $xoopsDB, $xoopsTpl;
 
+    $myts = MyTextSanitizer::getInstance();
+
     $sql = 'SELECT ncsn , count(*) FROM ' . $xoopsDB->prefix('tad_news') . ' GROUP BY ncsn';
     $result = $xoopsDB->query($sql);
     while (list($ncsn, $counter) = $xoopsDB->fetchRow($result)) {
@@ -27,6 +30,8 @@ function list_tadnews_cate_tree($def_ncsn = '')
     $sql = 'SELECT ncsn,of_ncsn,nc_title FROM ' . $xoopsDB->prefix('tad_news_cate') . " WHERE not_news!='1' ORDER BY sort";
     $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     while (list($ncsn, $of_ncsn, $nc_title) = $xoopsDB->fetchRow($result)) {
+        $nc_title = addslashes($nc_title);
+
         $font_style = $def_ncsn == $ncsn ? ", font:{'background-color':'yellow', 'color':'black'}" : '';
         //$open            = in_array($ncsn, $path_arr) ? 'true' : 'false';
         $display_counter = empty($cate_count[$ncsn]) ? '' : " ({$cate_count[$ncsn]})";
@@ -42,13 +47,12 @@ function list_tadnews_cate_tree($def_ncsn = '')
 }
 
 /*-----------執行動作判斷區----------*/
-require_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
-$op = system_CleanVars($_REQUEST, 'op', '', 'string');
-$ncsn = system_CleanVars($_REQUEST, 'ncsn', 0, 'int');
-$nsn = system_CleanVars($_REQUEST, 'nsn', 0, 'int');
-$show_uid = system_CleanVars($_REQUEST, 'show_uid', 0, 'int');
-$to_ncsn = system_CleanVars($_REQUEST, 'to_ncsn', 0, 'int');
-$not_news = system_CleanVars($_REQUEST, 'not_news', 0, 'int');
+$op = Request::getString('op');
+$ncsn = Request::getInt('ncsn');
+$nsn = Request::getInt('nsn');
+$show_uid = Request::getInt('show_uid');
+$to_ncsn = Request::getInt('to_ncsn');
+$not_news = Request::getInt('not_news');
 
 switch ($op) {
     //刪除資料
