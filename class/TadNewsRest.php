@@ -22,7 +22,7 @@ class TadNewsRest extends SimpleRest
     public function __construct($token = '')
     {
         if ($token) {
-            $User = $this->user($token);
+            $User = $this->getXoopsUser($token);
             $this->uid = $User['uid'];
             $this->groups = $User['groups'];
             $this->user = $User['user'];
@@ -71,8 +71,7 @@ class TadNewsRest extends SimpleRest
 
         $sql = 'SELECT `ncsn`, `of_ncsn`, `nc_title`, `sort`, `enable_group` FROM `' . $xoopsDB->prefix('tad_news_cate') . '` WHERE `not_news`!=? ORDER BY `sort`';
         $result = Utility::query($sql, 's', [1]) or Utility::web_error($sql, __FILE__, __LINE__);
-        while (list($ncsn, $of_ncsn, $nc_titl
-        e, $sort, $enable_group) = $xoopsDB->fetchRow($result)) {
+        while (list($ncsn, $of_ncsn, $nc_title, $sort, $enable_group) = $xoopsDB->fetchRow($result)) {
             if ($enable_group) {
                 $enable_group_arr = \explode(',', $enable_group);
                 // Utility::dd($enable_group_arr);
